@@ -1,0 +1,108 @@
+<mat-toolbar class="top-bar">
+  <mat-icon>Icon</mat-icon>
+  <span class="app-name">Mentorship System</span>
+  <span class="spacer"></span>
+  <mat-icon aria-label="notifications">Notifications</mat-icon>
+  <mat-icon aria-label="profile">profile_icon</mat-icon>
+</mat-toolbar>
+
+<mat-sidenav-container class="dashboard-layout">
+  <mat-sidenav mode="side" opened class="side-menu">
+    <mat-nav-list>
+      <a mat-list-item class="selected" href="/">
+        <mat-icon matListItemIcon>dashboard</mat-icon>
+        <span matListItemTitle>Dashboard</span>
+      </a>
+    </mat-nav-list>
+
+    <mat-list-item>
+      <mat-icon matListItemIcon>search</mat-icon>
+      <span matListItemTitle>Find Mentors</span>
+    </mat-list-item>
+
+    <mat-list-item>
+      <mat-icon matListItemIcon>menu_book</mat-icon>
+      <span matListItemTitle>My Courses</span>
+    </mat-list-item>
+
+    <mat-list-item>
+      <mat-icon matListItemIcon>event</mat-icon>
+      <span matListItemTitle>Sessions</span>
+    </mat-list-item>
+
+    <mat-list-item>
+      <mat-icon matListItemIcon>folder</mat-icon>
+      <span matListItemTitle>Resources</span>
+    </mat-list-item>
+
+    <mat-list-item>
+      <mat-icon matListItemIcon>person</mat-icon>
+      <span matListItemTitle>Profile</span>
+    </mat-list-item>
+  </mat-sidenav>
+
+  <mat-sidenav-content>
+    <main class="dashboard-content">
+      <mat-card class="welcome-banner">
+        <div class="welcome-image-area">
+        <img class="welcome-photo"
+             ngSrc="/images/pexels-rdne-7683730.jpg"
+             [fill]="true"
+             [priority]="true"
+             alt="">
+        </div>
+        <mat-card-content>
+          <h1>Welcome Back (Name)!</h1>
+        </mat-card-content>
+      </mat-card>
+
+      <div class="top-3-cards">
+        <mat-card>
+          <mat-card-content>
+            <mat-icon>menu_book</mat-icon>
+            <h2>My Courses</h2>
+            <p class="number">3</p>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card>
+          <mat-card-content>
+            <mat-icon>sessions</mat-icon>
+            <h2>Upcoming Sessions</h2>
+            <p class="number">2</p>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card>
+          <mat-card-content>
+            <mat-icon>feedback</mat-icon>
+            <h2>Feedbacks Remaining</h2>
+            <p class="number">1</p>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <div class="bottom-2-cards">
+        <div class="assessment-card">
+          <mat-card>
+            <mat-card-header>
+              <mat-card-title>Upcoming Assessments</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <p>Calculus quiz - November 18</p>
+              <p>Linear Algebra quiz - November 18</p>
+            </mat-card-content>
+          </mat-card>
+        </div>
+
+        <div class="find-mentors">
+          <mat-card>
+            <h2>Find Mentors</h2>
+            <p>Find mentors to help you with different courses!</p>
+            <button mat-flat-button type="button">Find a mentor</button>
+          </mat-card>
+        </div>
+      </div>
+    </main>
+  </mat-sidenav-content>
+</mat-sidenav-container>

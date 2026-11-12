@@ -1,0 +1,153 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.top-bar {
+  display: flex;
+  background: #006A6A; //to be used again as a background (if needed)
+  color: #C0D5D4; //to be used again as a title
+}
+
+.app-name {
+  font-weight: 600;
+}
+
+.spacer{
+  flex: 1;
+}
+
+.dashboard-layout{
+  flex: 1;
+}
+
+.side-menu {
+  width: 15rem;
+  padding: 1rem 0.5rem;
+}
+
+.selected {
+  background-color: #ACC7C6;
+}
+
+.welcome-banner {
+  position: relative;
+  margin-bottom: 2rem;
+  overflow: hidden;
+  min-height: 17rem;
+  background: #004b4b;
+}
+
+.welcome-image-area {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 75%;
+  height: 100%;
+}
+
+.welcome-photo {
+  object-fit: cover;
+  object-position: center 15%;
+}
+
+.welcome-banner mat-card-content {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 2rem;
+  color: white;
+  background: linear-gradient(
+    90deg,
+    rgba(0, 75, 75, 1) 0%,
+    rgba(0, 75, 75, 1) 25%,
+    rgba(0, 75, 75, 0) 60%
+  );
+}
+
+.welcome-banner h1 {
+  font-size: 2.5rem;
+}
+
+.dashboard-content {
+  max-width: 85rem;
+  margin-inline: auto;
+  padding: 1.5rem;
+  box-sizing: border-box;
+}
+
+.dashboard-content > h1, .welcome, .top-3-cards{
+  flex: 0 0 auto;
+}
+
+.dashboard-content > h1 {
+  margin: 0;
+}
+
+mat-card {
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+}
+
+.welcome {
+  font-size: 1rem;
+}
+
+.top-3-cards{
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.top-3-cards mat-card{
+  flex: 1;
+}
+
+@media (max-width: 50rem){
+  .top-3-cards{
+    flex-direction: column;
+  }
+}
+
+.number {
+  color: #438483;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.bottom-2-cards {
+  display: flex;
+  gap: 1rem;
+  align-items: stretch;
+}
+
+.assessment-card {
+  flex: 1.7;
+  display: flex;
+}
+
+.find-mentors {
+  flex: 1.3;
+  display: flex;
+}
+
+.bottom-2-cards mat-card {
+  flex: 1;
+}
+
+@media (max-width: 50rem){
+  .bottom-2-cards{
+    flex-direction: column;
+  }
+}
+
+.find-mentors mat-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 1.5rem;
+    box-sizing: border-box;
+  }
+
