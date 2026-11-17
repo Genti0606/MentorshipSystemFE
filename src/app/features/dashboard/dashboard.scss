@@ -1,34 +1,6 @@
 :host {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-}
-
-.top-bar {
-  display: flex;
-  background: #006A6A; //to be used again as a background (if needed)
-  color: #C0D5D4; //to be used again as a title
-}
-
-.app-name {
-  font-weight: 600;
-}
-
-.spacer{
-  flex: 1;
-}
-
-.dashboard-layout{
-  flex: 1;
-}
-
-.side-menu {
-  width: 15rem;
-  padding: 1rem 0.5rem;
-}
-
-.selected {
-  background-color: #ACC7C6;
+  display: block;
+  min-height: 100%;
 }
 
 .welcome-banner {
@@ -73,7 +45,8 @@
 }
 
 .dashboard-content {
-  max-width: 85rem;
+  width: 100%;
+  max-width: none;
   margin-inline: auto;
   padding: 1.5rem;
   box-sizing: border-box;
@@ -150,4 +123,3 @@ mat-card {
     padding: 1.5rem;
     box-sizing: border-box;
   }
-
