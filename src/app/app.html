@@ -1,1 +1,50 @@
-<router-outlet />
+<mat-toolbar class="top-bar">
+  <button mat-icon-button type="button" aria-label="Toggle navigation" (click)="toggleSidenav()">
+    <mat-icon>menu</mat-icon>
+  </button>
+
+  <span class="app-name">Mentorship System</span>
+  <span class="spacer"></span>
+  <mat-icon aria-label="notifications">Notifications</mat-icon>
+  <mat-icon aria-label="profile">profile_icon</mat-icon>
+</mat-toolbar>
+
+<mat-sidenav-container class="dashboard-layout">
+  <mat-sidenav mode="side" opened class="side-menu">
+    <mat-nav-list>
+      <a mat-list-item class="selected" href="/">
+        <mat-icon matListItemIcon>dashboard</mat-icon>
+        <span matListItemTitle>Dashboard</span>
+      </a>
+    </mat-nav-list>
+
+    <mat-list-item>
+      <mat-icon matListItemIcon>search</mat-icon>
+      <span matListItemTitle>Find Mentors</span>
+    </mat-list-item>
+
+    <mat-list-item>
+      <mat-icon matListItemIcon>menu_book</mat-icon>
+      <span matListItemTitle>My Courses</span>
+    </mat-list-item>
+
+    <mat-list-item>
+      <mat-icon matListItemIcon>event</mat-icon>
+      <span matListItemTitle>Sessions</span>
+    </mat-list-item>
+
+    <mat-list-item>
+      <mat-icon matListItemIcon>folder</mat-icon>
+      <span matListItemTitle>Resources</span>
+    </mat-list-item>
+
+    <mat-list-item>
+      <mat-icon matListItemIcon>person</mat-icon>
+      <span matListItemTitle>Profile</span>
+    </mat-list-item>
+  </mat-sidenav>
+
+  <mat-sidenav-content>
+    <router-outlet />
+  </mat-sidenav-content>
+</mat-sidenav-container>

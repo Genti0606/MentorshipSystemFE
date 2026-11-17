@@ -1,0 +1,45 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.top-bar {
+  display: flex;
+  flex: 0 0 auto;
+  background: #006a6a;
+  color: #f3fafa;
+}
+
+.top-bar button{
+  color: #fff;
+}
+
+.app-name {
+  font-weight: 600;
+}
+
+.spacer {
+  flex: 1;
+}
+
+.dashboard-layout {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.side-menu {
+  width: 15rem;
+  padding: 1rem 0.5rem;
+  box-sizing: border-box;
+}
+
+.selected {
+  background-color: #acc7c6;
+}
+
+@media (max-width: 50rem) {
+  .side-menu {
+    width: min(15rem, 85vw);
+  }
+}
