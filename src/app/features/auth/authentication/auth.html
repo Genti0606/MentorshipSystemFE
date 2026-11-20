@@ -1,0 +1,83 @@
+<main class="auth-page">
+  <section class="auth-card" aria-labelledby="auth-title">
+    <p class="brand">EPOKA · Mentorship System</p>
+    <h1 id="auth-title">{{ registering ? 'Create your account' : 'Log in' }}</h1>
+    <p>
+      {{
+        registering
+          ? 'Join as a student or mentor.'
+          : 'Welcome back. Enter your school account details.'
+      }}
+    </p>
+    @if (!registering && registered) {
+      <p class="notice" role="status">Account created. You can now log in.</p>
+    }
+    @if (message) {
+      <p class="notice" role="alert">{{ message }}</p>
+    }
+    <form #form="ngForm" (ngSubmit)="submit()">
+      <label
+        >Name<input
+          name="name"
+          [(ngModel)]="name"
+          required
+          maxlength="100"
+          autocomplete="given-name"
+      /></label>
+      <label
+        >Surname<input
+          name="surname"
+          [(ngModel)]="surname"
+          required
+          maxlength="100"
+          autocomplete="family-name"
+      /></label>
+      <label
+        >School email<input
+          name="email"
+          type="email"
+          email
+          pattern="[^\s@]+@epoka\.edu\.al"
+          [(ngModel)]="email"
+          required
+          maxlength="250"
+          autocomplete="username"
+          placeholder="name@epoka.edu.al"
+      /></label>
+      <label
+        >Password<input
+          name="password"
+          type="password"
+          [(ngModel)]="password"
+          required
+          [minlength]="registering ? 8 : 1"
+          [autocomplete]="registering ? 'new-password' : 'current-password'"
+      /></label>
+      @if (registering) {
+        <label
+          >Confirm password<input
+            name="confirm"
+            type="password"
+            [(ngModel)]="confirm"
+            required
+            minlength="8"
+            autocomplete="new-password"
+        /></label>
+        <label
+          >Account type<select name="role" [(ngModel)]="role">
+            <option value="student">Student</option>
+            <option value="mentor">Mentor</option>
+          </select></label
+        >
+      }
+      <button class="primary" type="submit" [disabled]="form.invalid || busy">
+        {{ busy ? 'Please wait…' : registering ? 'Register' : 'Log in' }}
+      </button>
+    </form>
+    @if (registering) {
+      <p class="switch">Already have an account? <a routerLink="/login">Log in</a></p>
+    } @else {
+      <p class="switch">New account? <a routerLink="/register">Register here</a></p>
+    }
+  </section>
+</main>

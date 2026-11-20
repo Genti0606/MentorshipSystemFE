@@ -52,7 +52,9 @@
   box-sizing: border-box;
 }
 
-.dashboard-content > h1, .welcome, .top-3-cards{
+.dashboard-content > h1,
+.welcome,
+.top-3-cards {
   flex: 0 0 auto;
 }
 
@@ -68,18 +70,18 @@ mat-card {
   font-size: 1rem;
 }
 
-.top-3-cards{
+.top-3-cards {
   display: flex;
   gap: 1rem;
   margin-bottom: 2rem;
 }
 
-.top-3-cards mat-card{
+.top-3-cards mat-card {
   flex: 1;
 }
 
-@media (max-width: 50rem){
-  .top-3-cards{
+@media (max-width: 50rem) {
+  .top-3-cards {
     flex-direction: column;
   }
 }
@@ -110,16 +112,16 @@ mat-card {
   flex: 1;
 }
 
-@media (max-width: 50rem){
-  .bottom-2-cards{
+@media (max-width: 50rem) {
+  .bottom-2-cards {
     flex-direction: column;
   }
 }
 
 .find-mentors mat-card {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    padding: 1.5rem;
-    box-sizing: border-box;
-  }
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 1.5rem;
+  box-sizing: border-box;
+}

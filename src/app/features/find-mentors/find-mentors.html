@@ -1,52 +1,20 @@
 <main class="page">
   <h1>Find Mentors</h1>
-  <p class="subtitle">Manage mentors and search by name, subject, or email.</p>
-  @if (message) { <p class="notice" role="status">{{ message }}</p> }
-  <div class="layout">
-    <section class="panel">
-      <h2>{{ draft.id ? 'Edit' : 'Add' }} mentor</h2>
-      <form #recordForm="ngForm" (ngSubmit)="save()">
-        <label>Name
-          <input name="name" type="text" [(ngModel)]="draft.name" required maxlength="250">
-        </label>
-        <label>Subject
-          <input name="subject" type="text" [(ngModel)]="draft.subject" required maxlength="250">
-        </label>
-        <label>Email
-          <input name="email" type="email" email [(ngModel)]="draft.email" required maxlength="250">
-        </label>
-        <label>Availability
-          <input name="availability" type="text" [(ngModel)]="draft.availability" required maxlength="250">
-        </label>
-        <div class="actions">
-          <button class="primary" type="submit" [disabled]="recordForm.invalid">Save mentor</button>
-          <button type="button" (click)="cancel()">Cancel</button>
-        </div>
-      </form>
-    </section>
-    <section class="panel">
-      <h2>Find Mentors ({{ records.length }})</h2>
-      <label>Search
-        <input type="search" [(ngModel)]="search" placeholder="Search records">
-      </label>
-      <div class="records">
-        @for (record of filteredRecords; track record.id) {
-          <article class="record">
-            <h3>{{ record.name }}</h3>
-            <dl>
-              <div><dt>Subject</dt><dd>{{ record.subject || '—' }}</dd></div>
-              <div><dt>Email</dt><dd>{{ record.email || '—' }}</dd></div>
-              <div><dt>Availability</dt><dd>{{ record.availability || '—' }}</dd></div>
-            </dl>
-            <div class="actions">
-              <button type="button" (click)="edit(record)">Edit</button>
-              <button class="danger" type="button" (click)="remove(record)">Delete</button>
-            </div>
-          </article>
-        } @empty {
-          <p class="empty">{{ records.length ? 'No matching records.' : 'No records yet. Add your first one using the form.' }}</p>
-        }
-      </div>
-    </section>
-  </div>
+  <p class="subtitle">Browse registered mentors and enroll in their courses.</p>
+  <section class="panel">
+    <label>Search by name or subject<input type="search" [(ngModel)]="search" /></label>
+    <div class="records">
+      @for (mentor of mentors; track mentor.id) {
+        <article class="record">
+          <h3>{{ mentor.name }} {{ mentor.surname }}</h3>
+          <p>{{ mentor.subject || 'Subject not added yet' }}</p>
+          <p>{{ mentor.bio }}</p>
+          <p>{{ courseCount(mentor.id) }} courses</p>
+          <a routerLink="/my-courses">Browse available courses</a>
+        </article>
+      } @empty {
+        <p class="empty">No matching mentors. Mentor accounts appear here after registration.</p>
+      }
+    </div>
+  </section>
 </main>

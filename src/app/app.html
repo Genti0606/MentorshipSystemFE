@@ -1,45 +1,101 @@
-<mat-toolbar class="top-bar">
-  <button mat-icon-button type="button" aria-label="Toggle navigation" (click)="toggleSidenav()">
-    <mat-icon>menu</mat-icon>
-  </button>
-
-  <span class="app-name">Mentorship System</span>
-  <span class="spacer"></span>
-  <mat-icon aria-label="notifications">notifications</mat-icon>
-  <mat-icon aria-label="profile">account_circle</mat-icon>
-</mat-toolbar>
-
-<mat-sidenav-container class="dashboard-layout">
-  <mat-sidenav mode="side" opened class="side-menu">
-    <mat-nav-list aria-label="Main navigation">
-      <a mat-list-item routerLink="/" routerLinkActive="selected" [routerLinkActiveOptions]="{ exact: true }" ariaCurrentWhenActive="page">
-        <mat-icon matListItemIcon>dashboard</mat-icon>
-        <span matListItemTitle>Dashboard</span>
-      </a>
-      <a mat-list-item routerLink="/find-mentors" routerLinkActive="selected" [routerLinkActiveOptions]="{ exact: true }" ariaCurrentWhenActive="page">
-        <mat-icon matListItemIcon>search</mat-icon>
-        <span matListItemTitle>Find Mentors</span>
-      </a>
-      <a mat-list-item routerLink="/my-courses" routerLinkActive="selected" [routerLinkActiveOptions]="{ exact: true }" ariaCurrentWhenActive="page">
-        <mat-icon matListItemIcon>menu_book</mat-icon>
-        <span matListItemTitle>My Courses</span>
-      </a>
-      <a mat-list-item routerLink="/sessions" routerLinkActive="selected" [routerLinkActiveOptions]="{ exact: true }" ariaCurrentWhenActive="page">
-        <mat-icon matListItemIcon>event</mat-icon>
-        <span matListItemTitle>Sessions</span>
-      </a>
-      <a mat-list-item routerLink="/resources" routerLinkActive="selected" [routerLinkActiveOptions]="{ exact: true }" ariaCurrentWhenActive="page">
-        <mat-icon matListItemIcon>folder</mat-icon>
-        <span matListItemTitle>Resources</span>
-      </a>
-      <a mat-list-item routerLink="/profile" routerLinkActive="selected" [routerLinkActiveOptions]="{ exact: true }" ariaCurrentWhenActive="page">
-        <mat-icon matListItemIcon>person</mat-icon>
-        <span matListItemTitle>Profile</span>
-      </a>
-    </mat-nav-list>
-  </mat-sidenav>
-
-  <mat-sidenav-content>
-    <router-outlet />
-  </mat-sidenav-content>
-</mat-sidenav-container>
+@if (auth.user(); as user) {
+  <mat-toolbar class="top-bar">
+    <button mat-icon-button type="button" aria-label="Toggle navigation" (click)="toggleSidenav()">
+      <mat-icon>menu</mat-icon>
+    </button>
+    <span class="app-name">Mentorship System</span>
+    <span class="spacer"></span>
+    <span class="account-label"
+      >{{ user.name }} · {{ user.role === 'mentor' ? 'Mentor' : 'Student' }}</span
+    >
+    <button
+      mat-icon-button
+      type="button"
+      [matMenuTriggerFor]="profileMenu"
+      aria-label="Account menu"
+    >
+      <mat-icon>account_circle</mat-icon>
+    </button>
+    <mat-menu #profileMenu="matMenu">
+      <button mat-menu-item (click)="changePassword()">
+        <mat-icon>lock</mat-icon>Change password
+      </button>
+      <button mat-menu-item (click)="logout()"><mat-icon>logout</mat-icon>Logout</button>
+    </mat-menu>
+  </mat-toolbar>
+  <mat-sidenav-container class="dashboard-layout">
+    <mat-sidenav [mode]="isMobile() ? 'over' : 'side'" [opened]="!isMobile()" class="side-menu">
+      <mat-nav-list aria-label="Main navigation">
+        <a
+          mat-list-item
+          routerLink="/"
+          routerLinkActive="selected"
+          [routerLinkActiveOptions]="{ exact: true }"
+          ariaCurrentWhenActive="page"
+          (click)="closeMobileSidenav()"
+          ><mat-icon matListItemIcon>dashboard</mat-icon><span matListItemTitle>Dashboard</span></a
+        >
+        @if (user.role === 'student') {
+          <a
+            mat-list-item
+            routerLink="/find-mentors"
+            routerLinkActive="selected"
+            ariaCurrentWhenActive="page"
+            (click)="closeMobileSidenav()"
+            ><mat-icon matListItemIcon>search</mat-icon
+            ><span matListItemTitle>Find Mentors</span></a
+          >
+        }
+        <a
+          mat-list-item
+          routerLink="/my-courses"
+          routerLinkActive="selected"
+          ariaCurrentWhenActive="page"
+          (click)="closeMobileSidenav()"
+          ><mat-icon matListItemIcon>menu_book</mat-icon
+          ><span matListItemTitle>{{
+            user.role === 'mentor' ? 'Courses I Teach' : 'My Courses'
+          }}</span></a
+        >
+        <a
+          mat-list-item
+          routerLink="/sessions"
+          routerLinkActive="selected"
+          ariaCurrentWhenActive="page"
+          (click)="closeMobileSidenav()"
+          ><mat-icon matListItemIcon>event</mat-icon><span matListItemTitle>Sessions</span></a
+        >
+        <a
+          mat-list-item
+          routerLink="/resources"
+          routerLinkActive="selected"
+          ariaCurrentWhenActive="page"
+          (click)="closeMobileSidenav()"
+          ><mat-icon matListItemIcon>folder</mat-icon
+          ><span matListItemTitle>{{
+            user.role === 'mentor' ? 'Upload Notes' : 'Course Notes'
+          }}</span></a
+        >
+        <a
+          mat-list-item
+          routerLink="/profile"
+          routerLinkActive="selected"
+          ariaCurrentWhenActive="page"
+          (click)="closeMobileSidenav()"
+          ><mat-icon matListItemIcon>person</mat-icon><span matListItemTitle>My Profile</span></a
+        >
+      </mat-nav-list>
+    </mat-sidenav>
+    <mat-sidenav-content>
+      @if (notice) {
+        <p class="account-notice" role="status">
+          {{ notice }}
+          <button type="button" (click)="notice = ''" aria-label="Dismiss notification">×</button>
+        </p>
+      }
+      <router-outlet />
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+} @else {
+  <router-outlet />
+}

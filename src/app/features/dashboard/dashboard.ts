@@ -1,10 +1,11 @@
-import { RouterLink } from '@angular/router';
-import { StorageService } from '../../shared/storage.service';
 import { DatePipe, NgOptimizedImage } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
+import { RouterLink } from '@angular/router';
+import { AuthService } from '../../shared/auth.service';
+import { CourseService } from '../../shared/course.service';
 
 @Component({
   imports: [MatButtonModule, MatCardModule, MatIconModule, NgOptimizedImage, RouterLink, DatePipe],
@@ -13,11 +14,20 @@ import { MatIconModule } from '@angular/material/icon';
   templateUrl: './dashboard.html',
 })
 export class Dashboard {
-  private readonly storage = inject(StorageService);
-  readonly name = this.storage.read<{ name: string } | null>('profile', null)?.name || 'Student';
-  readonly courseCount = this.storage.read<unknown[]>('courses', []).length;
-  readonly resourceCount = this.storage.read<unknown[]>('resources', []).length;
-  readonly upcomingSessions = this.storage.read<{ id: string; title: string; date: string; status: string }[]>('sessions', [])
-    .filter(session => session.status === 'Scheduled' && new Date(session.date).getTime() >= Date.now())
-    .sort((a, b) => a.date.localeCompare(b.date));
+  readonly auth = inject(AuthService);
+  readonly classroom = inject(CourseService);
+  get name(): string {
+    return this.auth.user()?.name || 'Student';
+  }
+  get courseCount(): number {
+    return this.classroom.myCourses.length;
+  }
+  get resourceCount(): number {
+    return this.classroom.notes.length;
+  }
+  get upcomingSessions() {
+    return this.classroom.sessions
+      .filter((s) => s.status === 'Scheduled' && new Date(s.date).getTime() >= Date.now())
+      .sort((a, b) => a.date.localeCompare(b.date));
+  }
 }

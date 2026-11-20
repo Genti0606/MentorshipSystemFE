@@ -1,80 +1,69 @@
 import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { StorageService } from '../../shared/storage.service';
-
-interface Course {
-  id: string;
-  title: string;
-  code: string;
-  mentor: string;
-  status: string;
-}
+import { RouterLink } from '@angular/router';
+import { AuthService } from '../../shared/auth.service';
+import { CourseService, Course, Note, Session } from '../../shared/course.service';
 
 @Component({
   selector: 'app-my-courses',
-  imports: [FormsModule],
+  imports: [FormsModule, RouterLink],
   templateUrl: './my-courses.html',
   styleUrl: './my-courses.scss',
 })
 export class MyCourses {
-  private readonly storage = inject(StorageService);
-  records = this.storage.read<Course[]>('courses', []);
-  draft: Course = this.emptyRecord();
-  search = '';
+  readonly auth = inject(AuthService);
+  readonly classroom = inject(CourseService);
   message = '';
 
-  get filteredRecords(): Course[] {
-    const query = this.search.toLowerCase().trim();
-    return this.records.filter(record => Object.values(record).some(value => value.toLowerCase().includes(query)));
+  draft = { id: '', title: '', code: '', description: '' };
+  search = '';
+  get records(): Course[] {
+    return this.classroom.myCourses.filter((c) =>
+      (c.title + c.code).toLowerCase().includes(this.search.toLowerCase()),
+    );
   }
-
+  get available(): Course[] {
+    return this.classroom.availableCourses.filter((c) =>
+      (c.title + c.code).toLowerCase().includes(this.search.toLowerCase()),
+    );
+  }
   save(): void {
-    if (!this.draft.title.trim()) return;
-    if (!this.draft.code.trim()) return;
-    if (!this.draft.mentor.trim()) return;
-    if (!this.draft.status.trim()) return;
-    const record = { ...this.draft, id: this.draft.id || crypto.randomUUID() };
-    const next = this.draft.id
-      ? this.records.map(item => item.id === record.id ? record : item)
-      : [...this.records, record];
-    if (!this.storage.write('courses', next)) {
-      this.message = 'Could not save. Browser storage may be full or disabled.';
-      return;
+    try {
+      this.classroom.saveCourse(this.draft);
+      this.cancel();
+      this.message = 'Course saved.';
+    } catch (e) {
+      this.message = (e as Error).message;
     }
-    this.records = next;
-    this.draft = this.emptyRecord();
-    this.message = 'Saved successfully.';
   }
-
-  edit(record: Course): void {
-    this.draft = { ...record };
-    this.message = '';
-  }
-
-  remove(record: Course): void {
-    if (!window.confirm('Delete this course?')) return;
-    const next = this.records.filter(item => item.id !== record.id);
-    if (!this.storage.write('courses', next)) {
-      this.message = 'Could not delete. Browser storage is unavailable.';
-      return;
-    }
-    this.records = next;
-    if (this.draft.id === record.id) this.cancel();
-    this.message = 'Deleted successfully.';
-  }
-
-  cancel(): void {
-    this.draft = this.emptyRecord();
-    this.message = '';
-  }
-
-  private emptyRecord(): Course {
-    return {
-      id: '',
-      title: '',
-      code: '',
-      mentor: '',
-      status: 'Not started',
+  edit(course: Course): void {
+    this.draft = {
+      id: course.id,
+      title: course.title,
+      code: course.code,
+      description: course.description,
     };
+  }
+  cancel(): void {
+    this.draft = { id: '', title: '', code: '', description: '' };
+    this.message = '';
+  }
+  remove(course: Course): void {
+    if (!confirm('Delete this course and all its notes and sessions?')) return;
+    try {
+      this.classroom.deleteCourse(course.id);
+      if (this.draft.id === course.id) this.cancel();
+      this.message = 'Course deleted.';
+    } catch (e) {
+      this.message = (e as Error).message;
+    }
+  }
+  enroll(course: Course, join: boolean): void {
+    try {
+      this.classroom.enroll(course.id, join);
+      this.message = join ? 'You are enrolled.' : 'You left the course.';
+    } catch (e) {
+      this.message = (e as Error).message;
+    }
   }
 }

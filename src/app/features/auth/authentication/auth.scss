@@ -1,0 +1,59 @@
+@use '../../../shared/page';
+
+.auth-page {
+  display: grid;
+  place-items: center;
+  min-height: 100dvh;
+  padding: 2rem 1rem;
+  background: var(--mat-sys-surface, #f8faf9);
+  box-sizing: border-box;
+}
+
+.auth-card {
+  width: min(100%, 30rem);
+  padding: 2rem;
+  border-radius: 1rem;
+  background: var(--mat-sys-surface-container-low, #f1f5f4);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+  box-sizing: border-box;
+}
+
+.brand {
+  margin: 0 0 1rem;
+  color: #438483;
+  font-weight: 600;
+}
+
+h1 {
+  margin: 0 0 1rem;
+  color: #004b4b;
+  font-size: 2.5rem;
+  line-height: 1.2;
+}
+
+p {
+  line-height: 1.6;
+}
+
+form {
+  margin-top: 2rem;
+}
+
+form button {
+  width: 100%;
+}
+
+.switch {
+  margin: 1.5rem 0 0;
+  text-align: center;
+}
+
+@media (max-width: 50rem) {
+  .auth-card {
+    padding: 1.5rem;
+  }
+
+  h1 {
+    font-size: 2rem;
+  }
+}
