@@ -1,52 +1,75 @@
 <main class="page">
-  <h1>My Courses</h1>
-  <p class="subtitle">Keep track of your courses and learning progress.</p>
-  @if (message) { <p class="notice" role="status">{{ message }}</p> }
-  <div class="layout">
+  <h1>{{ auth.user()?.role === 'mentor' ? 'Courses I Teach' : 'My Courses' }}</h1>
+  <p class="subtitle">
+    {{
+      auth.user()?.role === 'mentor'
+        ? 'Create courses and share notes with your students.'
+        : 'Enroll in courses to access mentor notes and request sessions.'
+    }}
+  </p>
+  @if (message) {
+    <p class="notice" role="status">{{ message }}</p>
+  }
+  <div class="layout" [class.single]="auth.user()?.role === 'student'">
+    @if (auth.user()?.role === 'mentor') {
+      <section class="panel">
+        <h2>{{ draft.id ? 'Edit course' : 'Create course' }}</h2>
+        <form #form="ngForm" (ngSubmit)="save()">
+          <label
+            >Title<input name="title" [(ngModel)]="draft.title" required maxlength="150"
+          /></label>
+          <label
+            >Course code<input name="code" [(ngModel)]="draft.code" required maxlength="50"
+          /></label>
+          <label
+            >Description<textarea
+              name="description"
+              [(ngModel)]="draft.description"
+              maxlength="2000"
+            ></textarea>
+          </label>
+          <div class="actions">
+            <button class="primary" type="submit" [disabled]="form.invalid">Save course</button
+            ><button type="button" (click)="cancel()">Cancel</button>
+          </div>
+        </form>
+      </section>
+    }
     <section class="panel">
-      <h2>{{ draft.id ? 'Edit' : 'Add' }} course</h2>
-      <form #recordForm="ngForm" (ngSubmit)="save()">
-        <label>Course title
-          <input name="title" type="text" [(ngModel)]="draft.title" required maxlength="250">
-        </label>
-        <label>Course code
-          <input name="code" type="text" [(ngModel)]="draft.code" required maxlength="250">
-        </label>
-        <label>Mentor
-          <input name="mentor" type="text" [(ngModel)]="draft.mentor" required maxlength="250">
-        </label>
-        <label>Status
-          <select name="status" [(ngModel)]="draft.status" required><option>Not started</option><option>In progress</option><option>Completed</option></select>
-        </label>
-        <div class="actions">
-          <button class="primary" type="submit" [disabled]="recordForm.invalid">Save course</button>
-          <button type="button" (click)="cancel()">Cancel</button>
-        </div>
-      </form>
-    </section>
-    <section class="panel">
-      <h2>My Courses ({{ records.length }})</h2>
-      <label>Search
-        <input type="search" [(ngModel)]="search" placeholder="Search records">
-      </label>
-      <div class="records">
-        @for (record of filteredRecords; track record.id) {
+      <label>Search courses<input type="search" [(ngModel)]="search" /></label>
+      <h2>Your courses</h2>
+      @for (course of records; track course.id) {
+        <article class="record">
+          <h3>{{ course.title }} · {{ course.code }}</h3>
+          <p>Mentor: {{ auth.displayName(course.mentorId) }}</p>
+          <p>{{ course.description }}</p>
+          <div class="actions">
+            <a routerLink="/resources">View course notes</a>
+            @if (auth.user()?.role === 'mentor') {
+              <span>{{ course.students.length }} students</span>
+              <button type="button" (click)="edit(course)">Edit</button
+              ><button class="danger" type="button" (click)="remove(course)">Delete</button>
+            } @else {
+              <button type="button" (click)="enroll(course, false)">Leave course</button>
+            }
+          </div>
+        </article>
+      } @empty {
+        <p class="empty">No courses yet.</p>
+      }
+      @if (auth.user()?.role === 'student') {
+        <h2 class="section-heading">Available courses</h2>
+        @for (course of available; track course.id) {
           <article class="record">
-            <h3>{{ record.title }}</h3>
-            <dl>
-              <div><dt>Course code</dt><dd>{{ record.code || '—' }}</dd></div>
-              <div><dt>Mentor</dt><dd>{{ record.mentor || '—' }}</dd></div>
-              <div><dt>Status</dt><dd>{{ record.status || '—' }}</dd></div>
-            </dl>
-            <div class="actions">
-              <button type="button" (click)="edit(record)">Edit</button>
-              <button class="danger" type="button" (click)="remove(record)">Delete</button>
-            </div>
+            <h3>{{ course.title }} · {{ course.code }}</h3>
+            <p>{{ auth.displayName(course.mentorId) }}</p>
+            <p>{{ course.description }}</p>
+            <button class="primary" type="button" (click)="enroll(course, true)">Enroll</button>
           </article>
         } @empty {
-          <p class="empty">{{ records.length ? 'No matching records.' : 'No records yet. Add your first one using the form.' }}</p>
+          <p class="empty">No additional courses available.</p>
         }
-      </div>
+      }
     </section>
   </div>
 </main>

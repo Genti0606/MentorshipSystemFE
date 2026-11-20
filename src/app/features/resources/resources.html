@@ -1,56 +1,93 @@
 <main class="page">
-  <h1>Resources</h1>
-  <p class="subtitle">Save useful links and materials for your courses.</p>
-  @if (message) { <p class="notice" role="status">{{ message }}</p> }
-  <div class="layout">
-    <section class="panel">
-      <h2>{{ draft.id ? 'Edit' : 'Add' }} resource</h2>
-      <form #recordForm="ngForm" (ngSubmit)="save()">
-        <label>Resource title
-          <input name="title" type="text" [(ngModel)]="draft.title" required maxlength="250">
-        </label>
-        <label>Course
-          <input name="course" type="text" [(ngModel)]="draft.course" required maxlength="250">
-        </label>
-        <label>Resource URL
-          <input name="url" type="url" [(ngModel)]="draft.url" required maxlength="250">
-        </label>
-        <label>Type
-          <select name="type" [(ngModel)]="draft.type" required><option>Article</option><option>Video</option><option>Document</option><option>Other</option></select>
-        </label>
-        <label>Notes
-          <textarea name="notes" [(ngModel)]="draft.notes" maxlength="2000"></textarea>
-        </label>
-        <div class="actions">
-          <button class="primary" type="submit" [disabled]="recordForm.invalid">Save resource</button>
-          <button type="button" (click)="cancel()">Cancel</button>
-        </div>
-      </form>
-    </section>
-    <section class="panel">
-      <h2>Resources ({{ records.length }})</h2>
-      <label>Search
-        <input type="search" [(ngModel)]="search" placeholder="Search records">
-      </label>
-      <div class="records">
-        @for (record of filteredRecords; track record.id) {
-          <article class="record">
-            <h3>{{ record.title }}</h3>
-            <dl>
-              <div><dt>Course</dt><dd>{{ record.course || '—' }}</dd></div>
-              <div><dt>Resource URL</dt><dd>@if (safeUrl(record.url); as url) { <a [href]="url" target="_blank" rel="noopener noreferrer">Open resource</a> } @else { Invalid URL }</dd></div>
-              <div><dt>Type</dt><dd>{{ record.type || '—' }}</dd></div>
-              <div><dt>Notes</dt><dd>{{ record.notes || '—' }}</dd></div>
-            </dl>
+  <h1>{{ auth.user()?.role === 'mentor' ? 'Upload Course Notes' : 'Course Notes' }}</h1>
+  <p class="subtitle">
+    {{
+      auth.user()?.role === 'mentor'
+        ? 'Share written notes or files with students enrolled in your courses.'
+        : 'Read and download notes from your enrolled courses.'
+    }}
+  </p>
+  @if (message) {
+    <p class="notice" role="status">{{ message }}</p>
+  }
+  <div class="layout" [class.single]="auth.user()?.role === 'student'">
+    @if (auth.user()?.role === 'mentor') {
+      <section class="panel">
+        <h2>{{ draft.id ? 'Edit note' : 'Add note' }}</h2>
+        @if (classroom.myCourses.length) {
+          <form #form="ngForm" (ngSubmit)="save()">
+            <label
+              >Course<select name="course" [(ngModel)]="draft.courseId" required>
+                <option value="">Choose your course</option>
+                @for (course of classroom.myCourses; track course.id) {
+                  <option [value]="course.id">{{ course.title }}</option>
+                }
+              </select></label
+            >
+            <label
+              >Title<input name="title" [(ngModel)]="draft.title" required maxlength="150"
+            /></label>
+            <label
+              >Note text<textarea name="text" [(ngModel)]="draft.text" maxlength="10000"></textarea>
+            </label>
+            <label
+              >Attach file (optional)<input
+                type="file"
+                accept=".pdf,.txt,.docx"
+                [disabled]="busy"
+                (change)="selectFile($event)"
+            /></label>
+            <p>PDF, TXT, or DOCX, up to 1 MB. Files are saved in this browser.</p>
+            @if (draft.fileName) {
+              <p>
+                {{ draft.fileName }}
+                <button type="button" [disabled]="busy" (click)="clearFile()">
+                  Remove attachment
+                </button>
+              </p>
+            }
             <div class="actions">
-              <button type="button" (click)="edit(record)">Edit</button>
-              <button class="danger" type="button" (click)="remove(record)">Delete</button>
+              <button class="primary" type="submit" [disabled]="form.invalid || busy">
+                {{ busy ? 'Reading file…' : 'Save note' }}
+              </button>
+              <button type="button" [disabled]="busy" (click)="cancel()">Cancel</button>
             </div>
-          </article>
-        } @empty {
-          <p class="empty">{{ records.length ? 'No matching records.' : 'No records yet. Add your first one using the form.' }}</p>
+          </form>
+        } @else {
+          <p>Create a course before uploading notes.</p>
         }
-      </div>
+      </section>
+    }
+    <section class="panel">
+      <label>Search notes<input type="search" [(ngModel)]="search" /></label>
+      <label
+        >Filter by course<select [(ngModel)]="courseFilter">
+          <option value="">All your courses</option>
+          @for (course of classroom.myCourses; track course.id) {
+            <option [value]="course.id">{{ course.title }}</option>
+          }
+        </select></label
+      >
+      @for (note of records; track note.id) {
+        <article class="record">
+          <h3>{{ note.title }}</h3>
+          <p>{{ classroom.courseTitle(note.courseId) }}</p>
+          <p class="note-text">{{ note.text }}</p>
+          <div class="actions">
+            @if (note.fileData) {
+              <button type="button" (click)="download(note)">Download {{ note.fileName }}</button>
+            }
+            @if (classroom.owns(note.courseId)) {
+              <button type="button" [disabled]="busy" (click)="edit(note)">Edit</button
+              ><button class="danger" type="button" [disabled]="busy" (click)="remove(note)">
+                Delete
+              </button>
+            }
+          </div>
+        </article>
+      } @empty {
+        <p class="empty">No matching notes. Students must enroll in a course to see its notes.</p>
+      }
     </section>
   </div>
 </main>

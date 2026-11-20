@@ -1,66 +1,78 @@
- <main class="dashboard-content">
-      <mat-card class="welcome-banner">
-        <div class="welcome-image-area">
-        <img class="welcome-photo"
-             ngSrc="/images/pexels-rdne-7683730.jpg"
-             [fill]="true"
-             [priority]="true"
-             alt="">
-        </div>
+<main class="dashboard-content">
+  <mat-card class="welcome-banner">
+    <div class="welcome-image-area">
+      <img
+        class="welcome-photo"
+        ngSrc="/images/pexels-rdne-7683730.jpg"
+        [fill]="true"
+        [priority]="true"
+        alt=""
+      />
+    </div>
+    <mat-card-content>
+      <h1>Welcome Back {{ name }}!</h1>
+    </mat-card-content>
+  </mat-card>
+
+  <div class="top-3-cards">
+    <mat-card>
+      <mat-card-content>
+        <mat-icon>menu_book</mat-icon>
+        <h2>My Courses</h2>
+        <p class="number">{{ courseCount }}</p>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card>
+      <mat-card-content>
+        <mat-icon>event</mat-icon>
+        <h2>Upcoming Sessions</h2>
+        <p class="number">{{ upcomingSessions.length }}</p>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card>
+      <mat-card-content>
+        <mat-icon>folder</mat-icon>
+        <h2>Saved Resources</h2>
+        <p class="number">{{ resourceCount }}</p>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <div class="bottom-2-cards">
+    <div class="assessment-card">
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>Upcoming Sessions</mat-card-title>
+        </mat-card-header>
         <mat-card-content>
-          <h1>Welcome Back {{ name }}!</h1>
+          @for (session of upcomingSessions.slice(0, 3); track session.id) {
+            <p>{{ session.title }} — {{ session.date | date: 'medium' }}</p>
+          } @empty {
+            <p>No upcoming sessions. Add one on the Sessions page.</p>
+          }
+          <a mat-button routerLink="/sessions">Manage sessions</a>
         </mat-card-content>
       </mat-card>
+    </div>
 
-      <div class="top-3-cards">
-        <mat-card>
-          <mat-card-content>
-            <mat-icon>menu_book</mat-icon>
-            <h2>My Courses</h2>
-            <p class="number">{{ courseCount }}</p>
-          </mat-card-content>
-        </mat-card>
-
-        <mat-card>
-          <mat-card-content>
-            <mat-icon>event</mat-icon>
-            <h2>Upcoming Sessions</h2>
-            <p class="number">{{ upcomingSessions.length }}</p>
-          </mat-card-content>
-        </mat-card>
-
-        <mat-card>
-          <mat-card-content>
-            <mat-icon>folder</mat-icon>
-            <h2>Saved Resources</h2>
-            <p class="number">{{ resourceCount }}</p>
-          </mat-card-content>
-        </mat-card>
-      </div>
-
-      <div class="bottom-2-cards">
-        <div class="assessment-card">
-          <mat-card>
-            <mat-card-header>
-              <mat-card-title>Upcoming Sessions</mat-card-title>
-            </mat-card-header>
-            <mat-card-content>
-              @for (session of upcomingSessions.slice(0, 3); track session.id) {
-  <p>{{ session.title }} — {{ session.date | date:'medium' }}</p>
-} @empty {
-  <p>No upcoming sessions. Add one on the Sessions page.</p>
-}
-<a mat-button routerLink="/sessions">Manage sessions</a>
-            </mat-card-content>
-          </mat-card>
-        </div>
-
-        <div class="find-mentors">
-          <mat-card>
-            <h2>Find Mentors</h2>
-            <p>Find mentors to help you with different courses!</p>
-            <a mat-flat-button routerLink="/find-mentors">Find a mentor</a>
-          </mat-card>
-        </div>
-      </div>
-    </main>
+    <div class="find-mentors">
+      <mat-card>
+        <h2>{{ auth.user()?.role === 'mentor' ? 'Your Courses' : 'Find Mentors' }}</h2>
+        <p>
+          {{
+            auth.user()?.role === 'mentor'
+              ? 'Manage your courses and share notes with students.'
+              : 'Find mentors to help you with different courses!'
+          }}
+        </p>
+        <a
+          mat-flat-button
+          [routerLink]="auth.user()?.role === 'mentor' ? '/my-courses' : '/find-mentors'"
+          >{{ auth.user()?.role === 'mentor' ? 'Manage courses' : 'Find a mentor' }}</a
+        >
+      </mat-card>
+    </div>
+  </div>
+</main>

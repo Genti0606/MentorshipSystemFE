@@ -1,34 +1,33 @@
 <main class="page">
-  <h1>Profile</h1>
-  <p class="subtitle">Create and update your personal details.</p>
-  @if (message) { <p class="notice" role="status">{{ message }}</p> }
+  <h1>{{ auth.user()?.role === 'mentor' ? 'Mentor Profile' : 'Student Profile' }}</h1>
+  <p class="subtitle">Keep your personal and academic details up to date.</p>
+  @if (message) {
+    <p class="notice" role="status">{{ message }}</p>
+  }
   <div class="layout">
     <section class="panel">
-      <h2>{{ saved ? 'Edit profile' : 'Create profile' }}</h2>
-      <form #profileForm="ngForm" (ngSubmit)="save()">
-        <label>Name<input name="name" [(ngModel)]="draft.name" required maxlength="120"></label>
-        <label>Email<input name="email" type="email" email [(ngModel)]="draft.email" required maxlength="250"></label>
-        <label>Course<input name="course" [(ngModel)]="draft.course" maxlength="250"></label>
-        <label>About me<textarea name="bio" [(ngModel)]="draft.bio" maxlength="2000"></textarea></label>
-        <div class="actions">
-          <button class="primary" type="submit" [disabled]="profileForm.invalid">Save profile</button>
-          <button type="button" (click)="cancel()">Cancel</button>
-        </div>
+      <h2>Edit profile</h2>
+      <form #form="ngForm" (ngSubmit)="save()">
+        <label>Name<input name="name" [(ngModel)]="name" required maxlength="100" /></label>
+        <label
+          >Surname<input name="surname" [(ngModel)]="surname" required maxlength="100"
+        /></label>
+        <label
+          >{{ auth.user()?.role === 'mentor' ? 'Subjects you teach' : 'Study program'
+          }}<input name="subject" [(ngModel)]="subject" maxlength="250"
+        /></label>
+        <label>About me<textarea name="bio" [(ngModel)]="bio" maxlength="2000"></textarea></label>
+        <button class="primary" type="submit" [disabled]="form.invalid">Save profile</button>
       </form>
     </section>
     <section class="panel">
-      <h2>Saved profile</h2>
-      @if (saved; as profile) {
-        <article class="record">
-          <h3>{{ profile.name }}</h3>
-          <dl>
-            <div><dt>Email</dt><dd>{{ profile.email }}</dd></div>
-            <div><dt>Course</dt><dd>{{ profile.course || '—' }}</dd></div>
-            <div><dt>About me</dt><dd>{{ profile.bio || '—' }}</dd></div>
-          </dl>
-          <button class="danger" type="button" (click)="remove()">Delete profile</button>
-        </article>
-      } @else { <p class="empty">No profile saved yet.</p> }
+      <h2>Account details</h2>
+      <p>{{ auth.user()?.name }} {{ auth.user()?.surname }}</p>
+      <p>{{ auth.user()?.email }}</p>
+      <p>Account type: {{ auth.user()?.role === 'mentor' ? 'Mentor' : 'Student' }}</p>
+      <p>{{ auth.user()?.subject }}</p>
+      <p>{{ auth.user()?.bio }}</p>
+      <p>Use the account icon in the top bar to change your password or log out.</p>
     </section>
   </div>
 </main>

@@ -1,82 +1,52 @@
 import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { StorageService } from '../../shared/storage.service';
-
-interface Session {
-  id: string;
-  title: string;
-  mentor: string;
-  date: string;
-  status: string;
-  notes: string;
-}
-
+import { RouterLink } from '@angular/router';
+import { AuthService } from '../../shared/auth.service';
+import { CourseService, Course, Note, Session } from '../../shared/course.service';
+import { DatePipe } from '@angular/common';
 @Component({
   selector: 'app-sessions',
-  imports: [FormsModule],
+  imports: [FormsModule, DatePipe],
   templateUrl: './sessions.html',
   styleUrl: './sessions.scss',
 })
 export class Sessions {
-  private readonly storage = inject(StorageService);
-  records = this.storage.read<Session[]>('sessions', []);
-  draft: Session = this.emptyRecord();
-  search = '';
+  readonly auth = inject(AuthService);
+  readonly classroom = inject(CourseService);
   message = '';
 
-  get filteredRecords(): Session[] {
-    const query = this.search.toLowerCase().trim();
-    return this.records.filter(record => Object.values(record).some(value => value.toLowerCase().includes(query)));
+  draft: Session = this.empty();
+  get records() {
+    return [...this.classroom.sessions].sort((a, b) => a.date.localeCompare(b.date));
   }
-
   save(): void {
-    if (!this.draft.title.trim()) return;
-    if (!this.draft.mentor.trim()) return;
-    if (!this.draft.date.trim()) return;
-    if (!this.draft.status.trim()) return;
-    const record = { ...this.draft, id: this.draft.id || crypto.randomUUID() };
-    const next = this.draft.id
-      ? this.records.map(item => item.id === record.id ? record : item)
-      : [...this.records, record];
-    if (!this.storage.write('sessions', next)) {
-      this.message = 'Could not save. Browser storage may be full or disabled.';
-      return;
+    try {
+      this.classroom.saveSession(this.draft);
+      this.draft = this.empty();
+      this.message = 'Session saved.';
+    } catch (e) {
+      this.message = (e as Error).message;
     }
-    this.records = next;
-    this.draft = this.emptyRecord();
-    this.message = 'Saved successfully.';
   }
-
-  edit(record: Session): void {
-    this.draft = { ...record };
+  edit(session: Session): void {
+    this.draft = { ...session };
     this.message = '';
   }
-
-  remove(record: Session): void {
-    if (!window.confirm('Delete this session?')) return;
-    const next = this.records.filter(item => item.id !== record.id);
-    if (!this.storage.write('sessions', next)) {
-      this.message = 'Could not delete. Browser storage is unavailable.';
-      return;
-    }
-    this.records = next;
-    if (this.draft.id === record.id) this.cancel();
-    this.message = 'Deleted successfully.';
-  }
-
   cancel(): void {
-    this.draft = this.emptyRecord();
+    this.draft = this.empty();
     this.message = '';
   }
-
-  private emptyRecord(): Session {
-    return {
-      id: '',
-      title: '',
-      mentor: '',
-      date: '',
-      status: 'Scheduled',
-      notes: '',
-    };
+  remove(session: Session): void {
+    if (!confirm('Delete this session?')) return;
+    try {
+      this.classroom.deleteSession(session.id);
+      if (this.draft.id === session.id) this.cancel();
+      this.message = 'Session deleted.';
+    } catch (e) {
+      this.message = (e as Error).message;
+    }
+  }
+  private empty(): Session {
+    return { id: '', courseId: '', creatorId: '', title: '', date: '', status: 'Scheduled' };
   }
 }
