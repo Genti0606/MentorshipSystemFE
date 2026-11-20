@@ -1,1 +1,52 @@
-<p>my-courses works!</p>
+<main class="page">
+  <h1>My Courses</h1>
+  <p class="subtitle">Keep track of your courses and learning progress.</p>
+  @if (message) { <p class="notice" role="status">{{ message }}</p> }
+  <div class="layout">
+    <section class="panel">
+      <h2>{{ draft.id ? 'Edit' : 'Add' }} course</h2>
+      <form #recordForm="ngForm" (ngSubmit)="save()">
+        <label>Course title
+          <input name="title" type="text" [(ngModel)]="draft.title" required maxlength="250">
+        </label>
+        <label>Course code
+          <input name="code" type="text" [(ngModel)]="draft.code" required maxlength="250">
+        </label>
+        <label>Mentor
+          <input name="mentor" type="text" [(ngModel)]="draft.mentor" required maxlength="250">
+        </label>
+        <label>Status
+          <select name="status" [(ngModel)]="draft.status" required><option>Not started</option><option>In progress</option><option>Completed</option></select>
+        </label>
+        <div class="actions">
+          <button class="primary" type="submit" [disabled]="recordForm.invalid">Save course</button>
+          <button type="button" (click)="cancel()">Cancel</button>
+        </div>
+      </form>
+    </section>
+    <section class="panel">
+      <h2>My Courses ({{ records.length }})</h2>
+      <label>Search
+        <input type="search" [(ngModel)]="search" placeholder="Search records">
+      </label>
+      <div class="records">
+        @for (record of filteredRecords; track record.id) {
+          <article class="record">
+            <h3>{{ record.title }}</h3>
+            <dl>
+              <div><dt>Course code</dt><dd>{{ record.code || '—' }}</dd></div>
+              <div><dt>Mentor</dt><dd>{{ record.mentor || '—' }}</dd></div>
+              <div><dt>Status</dt><dd>{{ record.status || '—' }}</dd></div>
+            </dl>
+            <div class="actions">
+              <button type="button" (click)="edit(record)">Edit</button>
+              <button class="danger" type="button" (click)="remove(record)">Delete</button>
+            </div>
+          </article>
+        } @empty {
+          <p class="empty">{{ records.length ? 'No matching records.' : 'No records yet. Add your first one using the form.' }}</p>
+        }
+      </div>
+    </section>
+  </div>
+</main>
