@@ -1,1 +1,56 @@
-<p>resources works!</p>
+<main class="page">
+  <h1>Resources</h1>
+  <p class="subtitle">Save useful links and materials for your courses.</p>
+  @if (message) { <p class="notice" role="status">{{ message }}</p> }
+  <div class="layout">
+    <section class="panel">
+      <h2>{{ draft.id ? 'Edit' : 'Add' }} resource</h2>
+      <form #recordForm="ngForm" (ngSubmit)="save()">
+        <label>Resource title
+          <input name="title" type="text" [(ngModel)]="draft.title" required maxlength="250">
+        </label>
+        <label>Course
+          <input name="course" type="text" [(ngModel)]="draft.course" required maxlength="250">
+        </label>
+        <label>Resource URL
+          <input name="url" type="url" [(ngModel)]="draft.url" required maxlength="250">
+        </label>
+        <label>Type
+          <select name="type" [(ngModel)]="draft.type" required><option>Article</option><option>Video</option><option>Document</option><option>Other</option></select>
+        </label>
+        <label>Notes
+          <textarea name="notes" [(ngModel)]="draft.notes" maxlength="2000"></textarea>
+        </label>
+        <div class="actions">
+          <button class="primary" type="submit" [disabled]="recordForm.invalid">Save resource</button>
+          <button type="button" (click)="cancel()">Cancel</button>
+        </div>
+      </form>
+    </section>
+    <section class="panel">
+      <h2>Resources ({{ records.length }})</h2>
+      <label>Search
+        <input type="search" [(ngModel)]="search" placeholder="Search records">
+      </label>
+      <div class="records">
+        @for (record of filteredRecords; track record.id) {
+          <article class="record">
+            <h3>{{ record.title }}</h3>
+            <dl>
+              <div><dt>Course</dt><dd>{{ record.course || '—' }}</dd></div>
+              <div><dt>Resource URL</dt><dd>@if (safeUrl(record.url); as url) { <a [href]="url" target="_blank" rel="noopener noreferrer">Open resource</a> } @else { Invalid URL }</dd></div>
+              <div><dt>Type</dt><dd>{{ record.type || '—' }}</dd></div>
+              <div><dt>Notes</dt><dd>{{ record.notes || '—' }}</dd></div>
+            </dl>
+            <div class="actions">
+              <button type="button" (click)="edit(record)">Edit</button>
+              <button class="danger" type="button" (click)="remove(record)">Delete</button>
+            </div>
+          </article>
+        } @empty {
+          <p class="empty">{{ records.length ? 'No matching records.' : 'No records yet. Add your first one using the form.' }}</p>
+        }
+      </div>
+    </section>
+  </div>
+</main>

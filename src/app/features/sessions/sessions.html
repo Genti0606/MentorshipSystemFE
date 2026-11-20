@@ -1,1 +1,56 @@
-<p>sessions works!</p>
+<main class="page">
+  <h1>Sessions</h1>
+  <p class="subtitle">Plan and manage your mentoring sessions.</p>
+  @if (message) { <p class="notice" role="status">{{ message }}</p> }
+  <div class="layout">
+    <section class="panel">
+      <h2>{{ draft.id ? 'Edit' : 'Add' }} session</h2>
+      <form #recordForm="ngForm" (ngSubmit)="save()">
+        <label>Session title
+          <input name="title" type="text" [(ngModel)]="draft.title" required maxlength="250">
+        </label>
+        <label>Mentor
+          <input name="mentor" type="text" [(ngModel)]="draft.mentor" required maxlength="250">
+        </label>
+        <label>Date and time
+          <input name="date" type="datetime-local" [(ngModel)]="draft.date" required maxlength="250">
+        </label>
+        <label>Status
+          <select name="status" [(ngModel)]="draft.status" required><option>Scheduled</option><option>Completed</option><option>Cancelled</option></select>
+        </label>
+        <label>Notes
+          <textarea name="notes" [(ngModel)]="draft.notes" maxlength="2000"></textarea>
+        </label>
+        <div class="actions">
+          <button class="primary" type="submit" [disabled]="recordForm.invalid">Save session</button>
+          <button type="button" (click)="cancel()">Cancel</button>
+        </div>
+      </form>
+    </section>
+    <section class="panel">
+      <h2>Sessions ({{ records.length }})</h2>
+      <label>Search
+        <input type="search" [(ngModel)]="search" placeholder="Search records">
+      </label>
+      <div class="records">
+        @for (record of filteredRecords; track record.id) {
+          <article class="record">
+            <h3>{{ record.title }}</h3>
+            <dl>
+              <div><dt>Mentor</dt><dd>{{ record.mentor || '—' }}</dd></div>
+              <div><dt>Date and time</dt><dd>{{ record.date || '—' }}</dd></div>
+              <div><dt>Status</dt><dd>{{ record.status || '—' }}</dd></div>
+              <div><dt>Notes</dt><dd>{{ record.notes || '—' }}</dd></div>
+            </dl>
+            <div class="actions">
+              <button type="button" (click)="edit(record)">Edit</button>
+              <button class="danger" type="button" (click)="remove(record)">Delete</button>
+            </div>
+          </article>
+        } @empty {
+          <p class="empty">{{ records.length ? 'No matching records.' : 'No records yet. Add your first one using the form.' }}</p>
+        }
+      </div>
+    </section>
+  </div>
+</main>
